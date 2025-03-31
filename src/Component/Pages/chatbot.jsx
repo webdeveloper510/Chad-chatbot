@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Container, Button, Navbar, Nav } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import "../../css/chatbot.css";
+import "../../css/chatbot.css"; // Updated CSS file
 import "bootstrap-icons/font/bootstrap-icons.css"; // Import Bootstrap Icons
 
 const ChatBot = () => {
@@ -27,66 +26,68 @@ const ChatBot = () => {
   };
 
   return (
-    <div className="chat-layout">
+    <div className="chat-container">
       {/* Sidebar */}
       <div className="sidebar">
-        <h2 className="sidebar-title">Medical  AI</h2>
+        <h2 className="sidebar-title">
+          <i className="bi bi-chat-left-dots"></i> Medical Logo
+        </h2>
 
-        {/* Home Button */}
-        <Button variant="dark" className="sidebar-btn" onClick={() => navigate("/")}>
-          <i className="bi bi-arrow-left-circle"></i> Home
-        </Button>
+        <button className="new-chat-btn">
+          <i className="bi bi-plus"></i> New Chat
+        </button>
 
-        {/* Chat History */}
-        <ul className="chat-history">
-          <li>New Chat</li>
-          <li>Chat 1</li>
-          <li>Chat 2</li>
-        </ul>
+        <div className="chat-history">
+          <div className="chat-item active">
+            <i className="bi bi-chat-left"></i> New Conversation
+          </div>
+        </div>
 
-        {/* Logout Button */}
-        <Button variant="danger" className="sidebar-btn logout-btn" onClick={handleLogout}>
-          <i className="bi bi-box-arrow-right"></i> Logout
-        </Button>
+        <div className="sidebar-footer">
+          <button className="clear-history-btn">
+            <i className="bi bi-trash"></i> Clear History
+          </button>
+          {/* Logout Button (Instead of Replace) */}
+          <button className="logout-btn" onClick={handleLogout}>
+            <i className="bi bi-box-arrow-right"></i> Logout
+          </button>
+        </div>
       </div>
 
-      {/* Main Content (Navbar + Chatbox) */}
+      {/* Main Chat Area */}
       <div className="main-content">
-        {/* Navbar */}
-        <Navbar className="top-navbar">
-          <Container fluid className="justify-content-between">
-            <Nav className="nav-icons">
-              <i className="bi bi-bell notification-icon"></i>
-              <i className="bi bi-person-circle user-icon"></i>
-            </Nav>
-          </Container>
-        </Navbar>
+        {/* Header */}
+        <header className="chat-header">
+          <h3>New Conversation</h3>
+          <div className="header-icons">
+            <i className="bi bi-arrow-clockwise"></i>
+            <i className="bi bi-download"></i>
+          </div>
+        </header>
 
         {/* Chatbox */}
         <div className="chatbox">
-          <Container className="chat-container">
-            <div className="chat_inner">
-              <div className="chat-messages">
-                {messages.map((msg, index) => (
-                  <div key={index} className={`message ${msg.sender}`}>
-                    <p>{msg.text}</p>
-                  </div>
-                ))}
+          <div className="chat-messages">
+            {messages.map((msg, index) => (
+              <div key={index} className={`message ${msg.sender}`}>
+                <p>{msg.text}</p>
               </div>
-              <div className="chat-input">
-                <input
-                  type="text"
-                  placeholder="Type your message..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                />
-                <Button variant="primary" onClick={sendMessage}>
-                  <i className="bi bi-send"></i>
-                </Button>
-              </div>
-            </div>
-          </Container>
+            ))}
+          </div>
+
+          {/* Chat Input */}
+          <div className="chat-input">
+            <input
+              type="text"
+              placeholder="Type your message here..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            />
+            <button className="send-btn" onClick={sendMessage}>
+              <i className="bi bi-send"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>
