@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./Component/Pages/home";
 import ChatBot from "./Component/Pages/chatbot";
 import "./App.css";
@@ -9,7 +9,7 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/loanapp" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/chat" element={<ChatBot />} />
         </Routes>
       </div>
