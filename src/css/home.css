@@ -10,7 +10,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    /* background: linear-gradient(135deg, #6a11cb, #2575fc); */
     color: white;
     flex-direction: column;
   }
@@ -35,6 +35,7 @@ body {
     height: 50px;
     width: 100%;
     padding: 5px 15px;
+    text-indent: 10px;
 }
 .form-check {
   margin: 15px;

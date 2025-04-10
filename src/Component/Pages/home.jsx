@@ -48,7 +48,7 @@ const Home = () => {
           variant="light"
           size="lg"
           className="custom-button"
-          onClick={() => navigate("/chat")} 
+          onClick={() => navigate("/newchatbot")} 
         >
           Talk to Medical AI
         </Button>
