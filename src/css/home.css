@@ -16,8 +16,8 @@ body {
   }
   
   .custom-button {
-    background: white;
-    color: #6a11cb;
+    background: #19A598;
+    color: #fff;
     font-weight: bold;
     border-radius: 30px;
     padding: 20px 30px;
@@ -25,8 +25,8 @@ body {
   }
   
   .custom-button:hover {
-    background: #e3dfff;
-    color: #4a0fa2;
+    background: #19a598ab;
+    color: #fff;
   }
   input.form-control {
     background: #fff;
