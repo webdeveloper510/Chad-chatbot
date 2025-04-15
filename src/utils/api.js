@@ -11,3 +11,12 @@ export const botResponse = async (data) => {
     return error.response;
   }
 };
+
+export const userLogin = async (data) => {
+  try {
+    const response = await axios.post("/email-register", data);
+    return response;
+  } catch (error) {
+    return error.response;
+  }
+};

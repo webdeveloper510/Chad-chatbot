@@ -3,44 +3,53 @@
 body {
   font-family: "Poppins", sans-serif;
 }
-  
+
 
 .custom-background {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* background: linear-gradient(135deg, #6a11cb, #2575fc); */
-    color: white;
-    flex-direction: column;
-  }
-  
-  .custom-button {
-    background: #19A598;
-    color: #fff;
-    font-weight: bold;
-    border-radius: 30px;
-    padding: 20px 30px;
-    border: none;
-  }
-  
-  .custom-button:hover {
-    background: #19a598ab;
-    color: #fff;
-  }
-  input.form-control {
-    background: #fff;
-    border: 1px solid #fff;
-    border-radius: 50px;
-    height: 50px;
-    width: 100%;
-    padding: 5px 15px;
-    text-indent: 10px;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* background: linear-gradient(135deg, #6a11cb, #2575fc); */
+  color: white;
+  flex-direction: column;
 }
+
+.loan_bot_butn {
+  display: flex;
+  justify-content: center;
+}
+
+.custom-button {
+  cursor: pointer;
+  background: #19A598;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 30px;
+  padding: 20px 30px;
+  border: none;
+}
+
+.custom-button:hover {
+  background: #19a598ab;
+  color: #fff;
+}
+
+input.form-control {
+  background: #fff;
+  border: 1px solid #fff;
+  border-radius: 50px;
+  height: 50px;
+  width: 100%;
+  padding: 5px 15px;
+  text-indent: 10px;
+}
+
 .form-check {
   margin: 15px;
   text-align: left;
 }
+
 button.custom-button {
   margin-top: 30px;
 }

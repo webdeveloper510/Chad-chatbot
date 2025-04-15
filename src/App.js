@@ -1,9 +1,9 @@
-import React from "react";
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./Component/Pages/home";
-import ChatBot from "./Component/Pages/chatbot";
-import NewChatBoat from "./Component/Pages/newchatbot";
-import "./App.css";
+// App.jsx
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
+import Home from './Component/Pages/home';
+import NewChatBoat from './Component/Pages/newchatbot';
 
 function App() {
   return (
@@ -11,8 +11,10 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/chat" element={<ChatBot />} />
-          <Route path="/newchatbot" element={<NewChatBoat />} />
+          <Route path="/newchatbot" element={<ProtectedRoute />}>
+            <Route index element={<NewChatBoat />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </Router>
