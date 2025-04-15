@@ -59,7 +59,7 @@ const NewChatBoat = () => {
             { type: "bot", text: res.data.message },
           ]);
         } else {
-          navigate("/");
+          navigate("/loanapp/login");
           setLoading(false);
         }
       })

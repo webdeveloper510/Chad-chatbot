@@ -10,11 +10,11 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/newchatbot" element={<ProtectedRoute />}>
+          <Route path="/loanapp/login" element={<Home />} />
+          <Route path="/loanapp/newchatbot" element={<ProtectedRoute />}>
             <Route index element={<NewChatBoat />} />
           </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/loanapp/login" replace />} />
         </Routes>
       </div>
     </Router>

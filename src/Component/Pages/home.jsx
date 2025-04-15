@@ -41,7 +41,7 @@ const Home = () => {
           if (res?.data?.status == 200 || res?.data?.status == 201) {
             toast.success(res?.data?.message, {theme: "colored",})
             setEmailError("");
-            navigate("/newchatbot");
+            navigate("/loanapp/newchatbot");
             localStorage.setItem("bot_user_access_token", email);
           }else{
             toast.error(res?.data?.message, {theme: "colored",})
