@@ -58,7 +58,7 @@ const Home = () => {
       <Container className="text-center content">
         <h1 className="title">LOAN SUGGEST AI BOT</h1>
         <p className="subtitle">
-          Get your medical questions answered instantly
+          Get your loan questions answered instantly
         </p>
 
         <Form>

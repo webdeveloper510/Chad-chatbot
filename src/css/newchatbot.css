@@ -24,6 +24,12 @@ body {
   margin-bottom: 24px;
   color: white;
   text-align: left;
+  display: flex;
+  justify-content: space-between;
+}
+
+.new_chat_icon{
+  cursor: pointer;
 }
 
 .history p {
@@ -344,7 +350,7 @@ input.search::placeholder {
 
 .history-item {
   /* padding: 20px 16px; */
-  border-radius: 12px;
+  border-radius: 6px;
   /* background-color: rgba(255, 255, 255, 0.05); */
   color: #fff;
   font-size: 15px;
@@ -352,11 +358,12 @@ input.search::placeholder {
   transition: background 0.2s ease;
   /* word-wrap: break-word; */
   text-align: left;
+  padding: 4px 7px;
 }
 
-/* .history-item:hover {
+.history-item:hover {
     background-color: rgba(255, 255, 255, 0.08);
-  } */
+  }
 
 .clear-history {
   padding: 10px 20px;

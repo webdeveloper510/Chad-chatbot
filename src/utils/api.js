@@ -20,3 +20,12 @@ export const userLogin = async (data) => {
     return error.response;
   }
 };
+
+export const userChatHistory = async (data) => {
+  try {
+    const response = await axios.get(`/get-history/?email=${data}`)
+    return response;
+  } catch (error) {
+    return error.response;
+  }
+};

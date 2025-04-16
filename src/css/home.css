@@ -36,6 +36,7 @@ body {
 }
 
 input.form-control {
+  outline: none;
   background: #fff;
   border: 1px solid #fff;
   border-radius: 50px;
