@@ -70,6 +70,11 @@ const Home = () => {
               value={email}
               onChange={(e) => handleInputChange(e)}
               required
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                    handleSubmit(e);
+                }
+              }}
             />
           </Form.Group>
           {emailError && (
