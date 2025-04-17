@@ -2,8 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import "../../css/newchatbot.css";
 import send from "../../images/send.png";
 import logoM from "../../images/loan-logo.png";
-import { botResponse, userChatHistory } from "../../utils/api";
+import {
+  botResponse,
+  deletChatHistory,
+  userChatHistory,
+  userLogin,
+} from "../../utils/api";
 import { useNavigate } from "react-router-dom";
+import { Button, Modal } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { toast } from "react-toastify";
 
 const NewChatBoat = () => {
   const navigate = useNavigate();
@@ -15,6 +23,13 @@ const NewChatBoat = () => {
 
   const [chatHistory, setChatHistory] = useState([]);
   const [showHistory, setShowHistory] = useState([]);
+  const [show, setShow] = useState(false);
+  const [deletQues, setDeletQues] = useState("");
+
+  const handleClose = () => {
+    setShow(false);
+    setDeletQues("");
+  };
 
   const queries = [
     "What are the eligibility criteria for a loan?",
@@ -110,13 +125,54 @@ const NewChatBoat = () => {
   }, [botMessage]);
 
   const handleShowHistory = (data) => {
-    setShowHistory(data);
+    const transformedMessages = data.flatMap((item) => [
+      { type: "user", text: item.question },
+      { type: "bot", text: item.answer },
+    ]);
+
+    // Now use this to update your messages state
+    setMessages(transformedMessages);
   };
 
   const handleNewChat = () => {
     setShowHistory([]);
     setMessages([{ type: "bot", text: "Hello, how can I assist you today?" }]);
+    userLogin({
+      email: user_email,
+    })
+      .then((res) => {})
+      .catch((error) => {
+        console.log(error);
+      });
   };
+
+  const handleDeletHistoryModal = (id, ques) => {
+    setShow(id);
+    setDeletQues(ques);
+  };
+
+  const handleDeletHistory = () => {
+    deletChatHistory(show, user_email)
+      .then((res) => {
+        console.log(res);
+        if (res?.data?.status == 200 || res?.data?.status == 204) {
+          setShow(false);
+          setDeletQues("");
+          getUserChatHistory();
+          toast.success(res?.data?.message, {
+            theme: "colored",
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleLogout = () => {
+    localStorage.clear()
+    navigate("/loanapp")
+  }
 
   return (
     <div className="app-container">
@@ -148,29 +204,54 @@ const NewChatBoat = () => {
             return questionsArray?.[0];
           }) && <div className="history-day">Today</div>}
 
-          {chatHistory?.today?.slice().reverse()?.map((entry, index) => {
-            const dynamicKey = Object.keys(entry)[0];
-            const questionsArray = entry[dynamicKey];
-            const firstItem = questionsArray?.[0];
+          {chatHistory?.today
+            ?.slice()
+            .reverse()
+            ?.map((entry, index) => {
+              const dynamicKey = Object.keys(entry)[0];
+              const questionsArray = entry[dynamicKey];
+              const firstItem = questionsArray?.[0];
 
-            return (
-              firstItem && (
-                <>
-                  <div
-                    onClick={() => {
-                      handleShowHistory(questionsArray);
-                    }}
-                    key={index}
-                    className="history-item"
-                  >
-                    {firstItem.question.length > 15
-                      ? `${firstItem.question.slice(0, 20)}...`
-                      : firstItem.question}
-                  </div>
-                </>
-              )
-            );
-          })}
+              return (
+                firstItem && (
+                  <>
+                    <div
+                      onClick={() => {
+                        handleShowHistory(questionsArray);
+                      }}
+                      key={index}
+                      className="history-item"
+                    >
+                      <span>
+                        {firstItem.question.length > 15
+                          ? `${firstItem.question.slice(0, 20)}`
+                          : firstItem.question}
+                      </span>
+                      <span>
+                        <svg
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDeletHistoryModal(
+                              dynamicKey,
+                              firstItem.question
+                            );
+                          }}
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          className="bi bi-trash-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
+                        </svg>
+                      </span>
+                    </div>
+                  </>
+                )
+              );
+            })}
 
           {chatHistory?.yesterday?.some((entry) => {
             const dynamicKey = Object.keys(entry)[0];
@@ -178,84 +259,161 @@ const NewChatBoat = () => {
             return questionsArray?.[0];
           }) && <div className="history-day">Yesterday</div>}
 
-          {chatHistory?.yesterday?.slice().reverse()?.map((entry, index) => {
-            const dynamicKey = Object.keys(entry)[0];
-            const questionsArray = entry[dynamicKey];
-            const firstItem = questionsArray?.[0];
+          {chatHistory?.yesterday
+            ?.slice()
+            .reverse()
+            ?.map((entry, index) => {
+              const dynamicKey = Object.keys(entry)[0];
+              const questionsArray = entry[dynamicKey];
+              const firstItem = questionsArray?.[0];
 
-            return (
-              firstItem && (
-                <div
-                  onClick={() => {
-                    handleShowHistory(questionsArray);
-                  }}
-                  key={index}
-                  className="history-item"
-                >
-                  {firstItem.question.length > 15
-                    ? `${firstItem.question.slice(0, 20)}...`
-                    : firstItem.question}
-                </div>
-              )
-            );
-          })}
+              return (
+                firstItem && (
+                  <div
+                    onClick={() => {
+                      handleShowHistory(questionsArray);
+                    }}
+                    key={index}
+                    className="history-item"
+                  >
+                    <span>
+                      {firstItem.question.length > 15
+                        ? `${firstItem.question.slice(0, 20)}`
+                        : firstItem.question}
+                    </span>
+                    <span>
+                      <svg
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDeletHistoryModal(
+                            dynamicKey,
+                            firstItem.question
+                          );
+                        }}
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-trash-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
+                      </svg>
+                    </span>
+                  </div>
+                )
+              );
+            })}
 
           {chatHistory?.last_week?.some((entry) => {
             const dynamicKey = Object.keys(entry)[0];
             const questionsArray = entry[dynamicKey];
             return questionsArray?.[0];
           }) && <div className="history-day">Last Week</div>}
-          {chatHistory?.last_week?.slice().reverse()?.map((entry, index) => {
-            const dynamicKey = Object.keys(entry)[0];
-            const questionsArray = entry[dynamicKey];
-            const firstItem = questionsArray?.[0];
+          {chatHistory?.last_week
+            ?.slice()
+            .reverse()
+            ?.map((entry, index) => {
+              const dynamicKey = Object.keys(entry)[0];
+              const questionsArray = entry[dynamicKey];
+              const firstItem = questionsArray?.[0];
 
-            return (
-              firstItem && (
-                <div
-                  onClick={() => {
-                    handleShowHistory(questionsArray);
-                  }}
-                  key={index}
-                  className="history-item"
-                >
-                  {firstItem.question.length > 15
-                    ? `${firstItem.question.slice(0, 20)}...`
-                    : firstItem.question}
-                </div>
-              )
-            );
-          })}
+              return (
+                firstItem && (
+                  <div
+                    onClick={() => {
+                      handleShowHistory(questionsArray);
+                    }}
+                    key={index}
+                    className="history-item"
+                  >
+                    <span>
+                      {firstItem.question.length > 15
+                        ? `${firstItem.question.slice(0, 20)}`
+                        : firstItem.question}
+                    </span>
+
+                    <span>
+                      <svg
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDeletHistoryModal(
+                            dynamicKey,
+                            firstItem.question
+                          );
+                        }}
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-trash-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
+                      </svg>
+                    </span>
+                  </div>
+                )
+              );
+            })}
 
           {chatHistory?.older?.some((entry) => {
             const dynamicKey = Object.keys(entry)[0];
             const questionsArray = entry[dynamicKey];
             return questionsArray?.[0];
           }) && <div className="history-day">Older</div>}
-          {chatHistory?.older?.slice().reverse()?.map((entry, index) => {
-            const dynamicKey = Object.keys(entry)[0];
-            const questionsArray = entry[dynamicKey];
-            const firstItem = questionsArray?.[0];
+          {chatHistory?.older
+            ?.slice()
+            .reverse()
+            ?.map((entry, index) => {
+              const dynamicKey = Object.keys(entry)[0];
+              const questionsArray = entry[dynamicKey];
+              const firstItem = questionsArray?.[0];
 
-            return (
-              firstItem && (
-                <div
-                  onClick={() => {
-                    handleShowHistory(questionsArray);
-                  }}
-                  key={index}
-                  className="history-item"
-                >
-                  {firstItem.question.length > 15
-                    ? `${firstItem.question.slice(0, 20)}...`
-                    : firstItem.question}
-                </div>
-              )
-            );
-          })}
+              return (
+                firstItem && (
+                  <div
+                    onClick={() => {
+                      handleShowHistory(questionsArray);
+                    }}
+                    key={index}
+                    className="history-item"
+                  >
+                    <span>
+                      {firstItem.question.length > 15
+                        ? `${firstItem.question.slice(0, 20)}`
+                        : firstItem.question}
+                    </span>
+
+                    <span>
+                      <svg
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDeletHistoryModal(
+                            dynamicKey,
+                            firstItem.question
+                          );
+                        }}
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-trash-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
+                      </svg>
+                    </span>
+                  </div>
+                )
+              );
+            })}
         </div>
 
-        <button className="clear-history">Clear History</button>
+        <button onClick={()=>handleLogout()} className="clear-history">Logout</button>
       </div>
 
       <div className="chat-window">
@@ -288,27 +446,16 @@ const NewChatBoat = () => {
         </div>
 
         <div className="chat-messages">
-          {showHistory?.length > 0
-            ? showHistory.map((msg, index) => (
-                <React.Fragment key={index}>
-                  {msg.question && (
-                    <div className="message user-message">{msg.question}</div>
-                  )}
-                  {msg.answer && (
-                    <div className="message bot-message">{msg.answer}</div>
-                  )}
-                </React.Fragment>
-              ))
-            : messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`message ${
-                    msg.type === "user" ? "user-message" : "bot-message"
-                  }`}
-                >
-                  {msg.text}
-                </div>
-              ))}
+          {messages?.map((msg, index) => (
+            <div
+              key={index}
+              className={`message ${
+                msg.type === "user" ? "user-message" : "bot-message"
+              }`}
+            >
+              {msg.text}
+            </div>
+          ))}
 
           {loading && (
             <div className="loader">
@@ -343,6 +490,27 @@ const NewChatBoat = () => {
           </button>
         </div>
       </div>
+
+      <Modal
+        variant="dark"
+        show={show}
+        centered
+        onHide={handleClose}
+        className="modal-dark"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Delete chat?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{deletQues}</Modal.Body>
+        <Modal.Footer>
+          <Button className="cancel_butn" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button className="delet_butn" onClick={handleDeletHistory}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

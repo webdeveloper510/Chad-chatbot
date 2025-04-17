@@ -61,11 +61,12 @@ const Home = () => {
           Get your loan questions answered instantly
         </p>
 
-        <Form>
+        <div className="form_section">
           {/* Email Input Field */}
-          <Form.Group className="mb-1">
-            <Form.Control
+          <div className="mb-1">
+            <input
               type="email"
+              className="email_input"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => handleInputChange(e)}
@@ -76,7 +77,7 @@ const Home = () => {
                 }
               }}
             />
-          </Form.Group>
+          </div>
           {emailError && (
             <p
               style={{
@@ -101,7 +102,7 @@ const Home = () => {
 
           {/* Submit Button */}
           <div className="loan_bot_butn">
-            <Button
+            <button
               variant="light"
               size="lg"
               className="custom-button"
@@ -109,9 +110,9 @@ const Home = () => {
               onClick={(e) => handleSubmit(e)}
             >
               Talk to Loan Bot AI
-            </Button>
+            </button>
           </div>
-        </Form>
+        </div>
       </Container>
     </div>
   );

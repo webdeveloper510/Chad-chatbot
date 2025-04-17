@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
 
 body {
-  font-family: "Poppins", sans-serif;
+  font-family: "Poppins", sans-serif !important;
 }
 
 
@@ -15,34 +15,50 @@ body {
   flex-direction: column;
 }
 
+.form_section{
+  width: 35%;
+  margin: auto;
+}
+
+.title {
+  display: block;
+  font-size: 2em;
+  margin-block-start: 0.67em;
+  margin-block-end: 0.67em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
+  unicode-bidi: isolate;
+}
+
 .loan_bot_butn {
   display: flex;
   justify-content: center;
 }
 
 .custom-button {
-  cursor: pointer;
-  background: #19A598;
-  color: #fff;
-  font-weight: bold;
-  border-radius: 30px;
-  padding: 20px 30px;
-  border: none;
+  cursor: pointer !important;
+  background: #19A598 !important;
+  color: #fff !important;
+  font-weight: bold !important;
+  border-radius: 30px !important;
+  padding: 15px 30px !important;
+  border: none !important;
 }
 
 .custom-button:hover {
-  background: #19a598ab;
-  color: #fff;
+  background: #19a598ab !important;
+  color: #fff !important;
 }
 
-input.form-control {
+.email_input {
   outline: none;
   background: #fff;
   border: 1px solid #fff;
   border-radius: 50px;
-  height: 50px;
+  height: 60px;
   width: 100%;
-  padding: 5px 15px;
+  padding: 20px 15px;
   text-indent: 10px;
 }
 
@@ -52,5 +68,5 @@ input.form-control {
 }
 
 button.custom-button {
-  margin-top: 30px;
+  margin-top: 30px !important;
 }

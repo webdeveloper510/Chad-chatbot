@@ -6,22 +6,46 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import ProtectedRoute from "./ProtectedRoute";
 import Home from "./Component/Pages/home";
 import NewChatBoat from "./Component/Pages/newchatbot";
+
+// This component checks if user is logged in
+const PrivateRoute = ({ children }) => {
+  const user_email = localStorage.getItem("bot_user_access_token");
+  return user_email ? children : <Navigate to="/loanapp" />;
+};
 
 function App() {
   const user_email = localStorage.getItem("bot_user_access_token");
 
   return (
     <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/loanapp" element={<Home />} />
-          {/* <Route path="/chat" element={<ChatBot />} /> */}
-          <Route path="/loanapp/newchatbot" element={<NewChatBoat />} />
-        </Routes>
-      </div>
+      <Routes>
+        {/* Default redirect based on login status */}
+        <Route
+          path="/"
+          element={
+            user_email ? (
+              <Navigate to="/loanapp/newchatbot" />
+            ) : (
+              <Navigate to="/loanapp" />
+            )
+          }
+        />
+
+        {/* Public route */}
+        <Route path="/loanapp" element={<Home />} />
+
+        {/* Protected route */}
+        <Route
+          path="/loanapp/newchatbot"
+          element={
+            <PrivateRoute>
+              <NewChatBoat />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
     </Router>
   );
 }
