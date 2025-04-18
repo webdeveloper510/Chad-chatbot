@@ -29,10 +29,19 @@ export const userChatHistory = async (data) => {
     return error.response;
   }
 };
-// delete-history/?email=mandeep@gmail.com&session=02479
+
 export const deletChatHistory = async (id,data) => {
   try {
     const response = await axios.delete(`/delete-history/?email=${data}&session=${id}`)
+    return response;
+  } catch (error) {
+    return error.response;
+  }
+};
+
+export const updateChatHistory = async (data) => {
+  try {
+    const response = await axios.post("/edit-history", data);
     return response;
   } catch (error) {
     return error.response;

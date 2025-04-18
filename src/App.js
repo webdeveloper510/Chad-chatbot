@@ -1,4 +1,3 @@
-// App.jsx
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -9,7 +8,7 @@ import {
 import Home from "./Component/Pages/home";
 import NewChatBoat from "./Component/Pages/newchatbot";
 
-// This component checks if user is logged in
+
 const PrivateRoute = ({ children }) => {
   const user_email = localStorage.getItem("bot_user_access_token");
   return user_email ? children : <Navigate to="/loanapp" />;

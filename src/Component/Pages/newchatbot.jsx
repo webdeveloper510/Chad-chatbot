@@ -5,6 +5,7 @@ import logoM from "../../images/loan-logo.png";
 import {
   botResponse,
   deletChatHistory,
+  updateChatHistory,
   userChatHistory,
   userLogin,
 } from "../../utils/api";
@@ -17,6 +18,7 @@ const NewChatBoat = () => {
   const navigate = useNavigate();
   const [botMessage, setBotMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
   const [messages, setMessages] = useState([
     { type: "bot", text: "Hello, how can I assist you today?" },
   ]);
@@ -57,34 +59,59 @@ const NewChatBoat = () => {
 
   const handleMessageSubmit = (e) => {
     e.preventDefault();
+    const user_email = localStorage.getItem("bot_user_access_token");
     setMessages((prevMessages) => [
       ...prevMessages,
       { type: "user", text: botMessage },
     ]);
     setBotMessage("");
-    const user_email = localStorage.getItem("bot_user_access_token");
     setLoading(true);
-    botResponse({
-      question: botMessage,
-      email: user_email,
-    })
-      .then((res) => {
-        if (res.data.status === 200) {
-          getUserChatHistory();
-          setLoading(false);
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { type: "bot", text: res.data.message },
-          ]);
-        } else {
-          navigate("/loanapp");
-          setLoading(false);
-        }
+    if (sessionId) {
+      updateChatHistory({
+        question: botMessage,
+        email: user_email,
+        session: sessionId,
       })
-      .catch((error) => {
-        console.log(error);
-        setLoading(false);
-      });
+        .then((res) => {
+          if (res.data.status === 200) {
+            getUserChatHistory();
+            setLoading(false);
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { type: "bot", text: res.data.message },
+            ]);
+          } else {
+            navigate("/loanapp");
+            setLoading(false);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+        });
+    } else {
+      botResponse({
+        question: botMessage,
+        email: user_email,
+      })
+        .then((res) => {
+          if (res.data.status === 200) {
+            getUserChatHistory();
+            setLoading(false);
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { type: "bot", text: res.data.message },
+            ]);
+          } else {
+            navigate("/loanapp");
+            setLoading(false);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+        });
+    }
   };
 
   const user_email = localStorage.getItem("bot_user_access_token");
@@ -124,24 +151,25 @@ const NewChatBoat = () => {
     };
   }, [botMessage]);
 
-  const handleShowHistory = (data) => {
-    const transformedMessages = data.flatMap((item) => [
+  const handleShowHistory = (data, id) => {
+    const transformedMessages = data?.flatMap((item) => [
       { type: "user", text: item.question },
       { type: "bot", text: item.answer },
     ]);
-
-    // Now use this to update your messages state
     setMessages(transformedMessages);
+    setSessionId(id);
+    console.log("session id", id)
   };
 
   const handleNewChat = () => {
+    setSessionId(null);
     setShowHistory([]);
     setMessages([{ type: "bot", text: "Hello, how can I assist you today?" }]);
     userLogin({
       email: user_email,
     })
       .then((res) => {})
-      .catch((error) => {
+      .catch((error) => {        
         console.log(error);
       });
   };
@@ -149,9 +177,11 @@ const NewChatBoat = () => {
   const handleDeletHistoryModal = (id, ques) => {
     setShow(id);
     setDeletQues(ques);
+    setSessionId(null);
   };
 
   const handleDeletHistory = () => {
+    setSessionId(null);
     deletChatHistory(show, user_email)
       .then((res) => {
         console.log(res);
@@ -170,9 +200,9 @@ const NewChatBoat = () => {
   };
 
   const handleLogout = () => {
-    localStorage.clear()
-    navigate("/loanapp")
-  }
+    localStorage.clear();
+    navigate("/loanapp");
+  };
 
   return (
     <div className="app-container">
@@ -217,15 +247,15 @@ const NewChatBoat = () => {
                   <>
                     <div
                       onClick={() => {
-                        handleShowHistory(questionsArray);
+                        handleShowHistory(questionsArray, dynamicKey);
                       }}
                       key={index}
-                      className="history-item"
+                      className={`${dynamicKey == sessionId ? "active_history" : "history-item"}`}
                     >
                       <span>
-                        {firstItem.question.length > 15
-                          ? `${firstItem.question.slice(0, 20)}`
-                          : firstItem.question}
+                        {firstItem?.question?.length > 15
+                          ? `${firstItem?.question?.slice(0, 20)}`
+                          : firstItem?.question}
                       </span>
                       <span>
                         <svg
@@ -234,7 +264,7 @@ const NewChatBoat = () => {
                             e.stopPropagation();
                             handleDeletHistoryModal(
                               dynamicKey,
-                              firstItem.question
+                              firstItem?.question
                             );
                           }}
                           xmlns="http://www.w3.org/2000/svg"
@@ -271,15 +301,15 @@ const NewChatBoat = () => {
                 firstItem && (
                   <div
                     onClick={() => {
-                      handleShowHistory(questionsArray);
+                      handleShowHistory(questionsArray, dynamicKey);
                     }}
                     key={index}
-                    className="history-item"
+                    className={`${dynamicKey == sessionId ? "active_history" : "history-item"}`}
                   >
                     <span>
-                      {firstItem.question.length > 15
-                        ? `${firstItem.question.slice(0, 20)}`
-                        : firstItem.question}
+                      {firstItem?.question?.length > 15
+                        ? `${firstItem?.question?.slice(0, 20)}`
+                        : firstItem?.question}
                     </span>
                     <span>
                       <svg
@@ -288,7 +318,7 @@ const NewChatBoat = () => {
                           e.stopPropagation();
                           handleDeletHistoryModal(
                             dynamicKey,
-                            firstItem.question
+                            firstItem?.question
                           );
                         }}
                         xmlns="http://www.w3.org/2000/svg"
@@ -323,15 +353,15 @@ const NewChatBoat = () => {
                 firstItem && (
                   <div
                     onClick={() => {
-                      handleShowHistory(questionsArray);
+                      handleShowHistory(questionsArray, dynamicKey);
                     }}
                     key={index}
-                    className="history-item"
+                    className={`${dynamicKey == sessionId ? "active_history" : "history-item"}`}
                   >
                     <span>
-                      {firstItem.question.length > 15
-                        ? `${firstItem.question.slice(0, 20)}`
-                        : firstItem.question}
+                      {firstItem?.question?.length > 15
+                        ? `${firstItem?.question?.slice(0, 20)}`
+                        : firstItem?.question}
                     </span>
 
                     <span>
@@ -341,7 +371,7 @@ const NewChatBoat = () => {
                           e.stopPropagation();
                           handleDeletHistoryModal(
                             dynamicKey,
-                            firstItem.question
+                            firstItem?.question
                           );
                         }}
                         xmlns="http://www.w3.org/2000/svg"
@@ -376,15 +406,15 @@ const NewChatBoat = () => {
                 firstItem && (
                   <div
                     onClick={() => {
-                      handleShowHistory(questionsArray);
+                      handleShowHistory(questionsArray, dynamicKey);
                     }}
                     key={index}
-                    className="history-item"
+                    className={`${dynamicKey == sessionId ? "active_history" : "history-item"}`}
                   >
                     <span>
-                      {firstItem.question.length > 15
-                        ? `${firstItem.question.slice(0, 20)}`
-                        : firstItem.question}
+                      {firstItem?.question?.length > 15
+                        ? `${firstItem?.question?.slice(0, 20)}`
+                        : firstItem?.question}
                     </span>
 
                     <span>
@@ -394,7 +424,7 @@ const NewChatBoat = () => {
                           e.stopPropagation();
                           handleDeletHistoryModal(
                             dynamicKey,
-                            firstItem.question
+                            firstItem?.question
                           );
                         }}
                         xmlns="http://www.w3.org/2000/svg"
@@ -413,18 +443,16 @@ const NewChatBoat = () => {
             })}
         </div>
 
-        <button onClick={()=>handleLogout()} className="clear-history">Logout</button>
+        <button onClick={() => handleLogout()} className="clear-history">
+          Logout
+        </button>
       </div>
 
       <div className="chat-window">
         <div className="top-bar">
           <div className="user-profile">
-            <img
-              className="avatar"
-              src="https://ui-avatars.com/api/?name=Noah+Johnson&background=4CAF50&color=fff"
-              alt="User Avatar"
-            />
-            <span className="username">Noah Johnson</span>
+            <span className="profile_text">{user_email?.split("@")?.[0]?.slice(0,1)}</span>
+            <span className="username">{user_email?.split("@")?.[0]}</span>
             <span className="dropdown-icon">▼</span>
           </div>
         </div>
