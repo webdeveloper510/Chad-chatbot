@@ -204,6 +204,23 @@ const NewChatBoat = () => {
     navigate("/loanapp");
   };
 
+  const renderMessageWithLinks = (text) => {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+
+  return parts.map((part, i) => {
+    if (part.match(urlRegex)) {
+      return (
+        <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: '#4ba3fa' }}>
+          {part}
+        </a>
+      );
+    } else {
+      return part;
+    }
+  });
+};
+
   return (
     <div className="app-container">
       <div className="sidebar">
@@ -481,7 +498,7 @@ const NewChatBoat = () => {
                 msg.type === "user" ? "user-message" : "bot-message"
               }`}
             >
-              {msg.text}
+              {renderMessageWithLinks(msg.text)}
             </div>
           ))}
 
