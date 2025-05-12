@@ -518,3 +518,7 @@ input.search::placeholder {
   border: 1px solid white !important;
   outline: none !important;
 }
+.bot-message a {
+    color: #19a598 !important;
+    font-weight: 600;
+}
