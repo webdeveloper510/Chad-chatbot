@@ -519,6 +519,18 @@ input.search::placeholder {
   outline: none !important;
 }
 .bot-message a {
-    color: #19a598 !important;
+    color: #78ff6d !important;
     font-weight: 600;
+    text-decoration: none;
+    padding-left: 3px;
+}
+ul.url_ul {
+    padding-top: 4px;
+    list-style: auto;
+    padding-left: 15px;
+}
+ul.url_ul li::marker {
+    color: #78ff6d !important;
+    font-weight: 600;
+    text-decoration: none;
 }
