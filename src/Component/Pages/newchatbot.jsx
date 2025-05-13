@@ -204,22 +204,89 @@ const NewChatBoat = () => {
     navigate("/loanapp");
   };
 
-  const renderMessageWithLinks = (text) => {
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const parts = text.split(urlRegex);
+//   const renderMessageWithLinks = (text) => {
+//   const urlRegex = /(https?:\/\/[^\s]+)/g;
+//   const parts = text.split(urlRegex);
 
-  return parts.map((part, i) => {
-    if (part.match(urlRegex)) {
-      return (
-        <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: '#4ba3fa' }}>
-          {part}
+//   return parts.map((part, i) => {
+//     if (part.match(urlRegex)) {
+//       return (
+//         <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: '#4ba3fa' }}>
+//           {part}
+//         </a>
+//       );
+//     } else {
+//       return part;
+//     }
+//   });
+// };
+// ✅ Only define once, at the top or inside the component
+// const LinkRegex = (text) => {
+//   const urlRegex = /(https?:\/\/[^\s]+)/g;
+//   console.log(text)
+//   return text.split(urlRegex).map((part, index) => {
+//     if (urlRegex.test(part)) {
+//       return (
+//         <a
+//           key={index}
+//           href={part}
+//           target="_blank"
+//           rel="noopener noreferrer"
+//           className="text-link"
+//         >
+//           Link
+//         </a>
+//       );
+//     }
+//     console.log(part)
+//     return part;
+//   });
+// };
+const renderMessageWithLinks = (text) => {
+  try {
+    const match = text.match(/\[.*?\]/s);
+    if (!match) return text;
+
+    const formattedText = match[0].replace(/'/g, '"');
+
+    const linkArray = JSON.parse(formattedText);
+
+    const formattedLinks = linkArray.map((link, index) => (
+   
+      <li key={index}>
+        <a
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-link"
+        >
+          {link.name}
         </a>
-      );
-    } else {
-      return part;
-    }
-  });
+        {index < linkArray.length - 1 && ", "}
+      </li>
+
+    ));
+
+    // Split the original text before and after the array
+    const parts = text.split(match[0]);
+
+    return (
+      <>
+        {parts[0]}
+         <ul className="url_ul">
+
+         {formattedLinks} 
+         </ul>
+         {parts[1]}
+      </>
+    );
+  } catch (err) {
+    console.error("Error rendering message links:", err);
+    return text;
+  }
 };
+
+
 
   return (
     <div className="app-container">
@@ -490,7 +557,7 @@ const NewChatBoat = () => {
           ))}
         </div>
 
-        <div className="chat-messages">
+        {/* <div className="chat-messages">
           {messages?.map((msg, index) => (
             <div
               key={index}
@@ -511,8 +578,33 @@ const NewChatBoat = () => {
           )}
 
           {/* Invisible div to scroll into view */}
-          <div ref={messagesEndRef} />
-        </div>
+          {/* <div ref={messagesEndRef} />
+        </div> */} 
+
+<div className="chat-messages">
+  {messages?.map((msg, index) => (
+    <div
+      key={index}
+      className={`message ${
+        msg.type === "user" ? "user-message" : "bot-message"
+      }`}
+    >
+      {renderMessageWithLinks(msg.text)}
+    </div>
+  ))}
+
+  {loading && (
+    <div className="loader">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  )}
+
+  {/* Invisible div to scroll into view */}
+  <div ref={messagesEndRef} />
+</div>
+
 
         <div className="outer_sendbtn d-flex">
           <div className="chat-input">
